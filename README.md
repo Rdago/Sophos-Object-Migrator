@@ -5,10 +5,10 @@ Migrates UTM Objects in Curlable Format for XG API
 ## Usage: 
 
 1. Get Data from SG UTM: 
-  * https://<UTM>/api/objects/network/hosts
-  * https://<UTM>/api/objects/network/dns_host/
-  * https://<UTM>/api/objects/service/udp/
-  * https://<UTM>/api/objects/service/tcp/  
+  * https://IP/api/objects/network/hosts
+  * https://IP/api/objects/network/dns_host/
+  * https://IP/api/objects/service/udp/
+  * https://IP/api/objects/service/tcp/  
 
 2. Modify Variables for Username / PW / Version and API URl of the XG Firewall 
 
