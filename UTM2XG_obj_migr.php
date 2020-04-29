@@ -1,13 +1,23 @@
 <?php
 
-// Set these Variables
-$username = "USER" ; 
-$pw = "PW";
-$apiVersion = "VERSION";
-$apiURI = "https://XG-IP:XG-PORT/webconsole/APIController?reqxml=";
+// Set these Variables - UTM
+$tokenUTM = "xxx";
+$apiUTM = 'https://UTM-IP:UTM-PORT/api/';
 
-// Create API Login - head
-$head = $apiURI . '<Request APIVersion="' . $apiVersion . '"><Login><Username>' . $username . '</Username><Password passwordform="plain">' . $pw . '</Password></Login>'; 
+
+// Set these Variables - XG Firewall
+$usernameXG = "USER" ; 
+$pwXG = "PW";
+$apiVersion = "VERSION";
+$apiXG = "https://XG-IP:XG-PORT/webconsole/APIController?reqxml=";
+
+
+// +++++++++++++++++++ Get UTM Data +++++++++++++++++++
+
+getUTMdata($apiUTM + "objects/network/hosts/", 'network.hosts' ); 
+getUTMdata($apiUTM + "objects/network/dns_host/", 'network.dns' ); 
+getUTMdata($apiUTM + "objects/service/udp/", 'service.udp' ); 
+getUTMdata($apiUTM + "objects/service/tcp/", 'service.tcp' ); 
 
 
 // +++++++++++++++++++ Read Files +++++++++++++++++++
@@ -28,19 +38,16 @@ $sudp_data = json_decode($sudp,true);
 $stcp = file_get_contents('service.tcp');
 $stcp_data = json_decode($stcp,true);
 
-// Read Service Group Hosts Files https://<UTM>/api/objects/service/group/
-$sgrp = file_get_contents('service.group');
-$sgrp_data = json_decode($sgrp,true);
-
-
 
 // +++++++++++++++++++ Process Data +++++++++++++++++++
+
+// Create API Login - head
+$head = $apiXG . '<Request APIVersion="' . $apiVersion . '"><Login><Username>' . $usernameXG . '</Username><Password passwordform="plain">' . $pwXG . '</Password></Login>'; 
 
 processHosts($head,$hosts_data,"hosts.xml"); 
 processDNS($head, $dns_data, "dns.xml");
 processServ($head,$stcp_data, "tcp.xml");
 processServ($head,$sudp_data, "udp.xml");
-
 
 
 // +++++++++++++++++++ Function Definitions +++++++++++++++++++
@@ -162,6 +169,27 @@ function processServ($head, $serv_data, $outfile) {
 	
 	fclose($file);
 
+}
+
+/**
+ * getUTMdata
+ * Makes a GET Request to the given URL and saves output to given filename. 
+ * 
+ * Params: 
+ * $apiurl -> URL to GET
+ * $filename -> output File
+ * $token -> API Token for Auth
+ */
+function getUTMdata($apiurl, $filename, $token){
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $apiurl);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		'Authorization: Basic ' . base64_encode("token:" + $token)
+	));
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	$nhosts = fopen($filename, "w"); 
+	fwrite($nhosts,curl_exec($curl));
+	curl_close($curl);
 }
 
 ?>
