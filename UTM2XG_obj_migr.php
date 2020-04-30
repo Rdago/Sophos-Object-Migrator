@@ -43,7 +43,7 @@ $stcp_data = json_decode($stcp,true);
 // Create API Login - head
 $head = $apiXG . '<Request APIVersion="' . $apiVersion . '"><Login><Username>' . $usernameXG . '</Username><Password passwordform="plain">' . $pwXG . '</Password></Login>'; 
 
-processHosts($head,$hosts_data,"hosts.xml"); 
+processHosts($head,$hosts_data, "hosts.xml"); 
 processDNS($head, $dns_data, "dns.xml");
 processServ($head,$stcp_data, "tcp.xml");
 processServ($head,$sudp_data, "udp.xml");
