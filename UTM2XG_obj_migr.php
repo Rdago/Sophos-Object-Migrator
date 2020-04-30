@@ -1,8 +1,8 @@
 <?php
 
 // Set these Variables - UTM
-$tokenUTM = "xxx";
-$apiUTM = 'https://UTM-IP:UTM-PORT/api/';
+$tokenUTM = "TOKEN";
+$apiUTM = 'https://IP:PORT/api/';
 
 
 // Set these Variables - XG Firewall
@@ -14,15 +14,14 @@ $apiXG = "https://XG-IP:XG-PORT/webconsole/APIController?reqxml=";
 
 // +++++++++++++++++++ Get UTM Data +++++++++++++++++++
 
-getUTMdata($apiUTM + "objects/network/hosts/", 'network.hosts' ); 
-getUTMdata($apiUTM + "objects/network/dns_host/", 'network.dns' ); 
-getUTMdata($apiUTM + "objects/service/udp/", 'service.udp' ); 
-getUTMdata($apiUTM + "objects/service/tcp/", 'service.tcp' ); 
-
+getUTMdata($apiUTM . "objects/network/host/", 'network.hosts', $tokenUTM ); 
+getUTMdata($apiUTM . "objects/network/dns_host/", 'network.dns', $tokenUTM ); 
+getUTMdata($apiUTM . "objects/service/udp/", 'service.udp', $tokenUTM ); 
+getUTMdata($apiUTM . "objects/service/tcp/", 'service.tcp', $tokenUTM ); 
 
 // +++++++++++++++++++ Read Files +++++++++++++++++++
 
-// Read Network Hosts files https://<UTM>/api/objects/network/hosts
+// Read Network Hosts files https://<UTM>/api/objects/network/host
 $hosts = file_get_contents('network.hosts');
 $hosts_data = json_decode($hosts,true);
 
@@ -181,12 +180,16 @@ function processServ($head, $serv_data, $outfile) {
  * $token -> API Token for Auth
  */
 function getUTMdata($apiurl, $filename, $token){
+	// Set Auth Header
+	$authHeader = array('Authorization: Basic ' . base64_encode("token:" . $token),'Content-type: application/json');
+	
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $apiurl);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-		'Authorization: Basic ' . base64_encode("token:" + $token)
-	));
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, $authHeader);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	
+	// Write Output to File
 	$nhosts = fopen($filename, "w"); 
 	fwrite($nhosts,curl_exec($curl));
 	curl_close($curl);
