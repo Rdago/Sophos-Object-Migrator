@@ -14,7 +14,7 @@ Migrates UTM Objects in Curlable Format for XG API
 
 3. Execute Script
 
-4. Parse output to CURL and start the Migration.
+4. Parse output to CURL and start the Migration. 
 
 ```bash
 cat *.xml | bash curl.sh
